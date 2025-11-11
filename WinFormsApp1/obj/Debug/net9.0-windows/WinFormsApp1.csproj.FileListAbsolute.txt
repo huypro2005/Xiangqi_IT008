@@ -1,0 +1,16 @@
+D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.Form1.resources
+D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.csproj.GenerateResource.cache
+D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.GeneratedMSBuildEditorConfig.editorconfig
+D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.AssemblyInfoInputs.cache
+D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.AssemblyInfo.cs
+D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.csproj.CoreCompileInputs.cache
+D:\do_an\IT008\WinFormsApp1\bin\Debug\net9.0-windows\WinFormsApp1.exe
+D:\do_an\IT008\WinFormsApp1\bin\Debug\net9.0-windows\WinFormsApp1.deps.json
+D:\do_an\IT008\WinFormsApp1\bin\Debug\net9.0-windows\WinFormsApp1.runtimeconfig.json
+D:\do_an\IT008\WinFormsApp1\bin\Debug\net9.0-windows\WinFormsApp1.dll
+D:\do_an\IT008\WinFormsApp1\bin\Debug\net9.0-windows\WinFormsApp1.pdb
+D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.dll
+D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\refint\WinFormsApp1.dll
+D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.pdb
+D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.genruntimeconfig.cache
+D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\ref\WinFormsApp1.dll
