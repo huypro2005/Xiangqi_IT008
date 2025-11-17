@@ -4,40 +4,43 @@ namespace WinFormsApp1
 {
     public partial class Form1 : Form
     {
+        private GameMode _cheDoChoi;
         private GameEngine gameEngine;
         private (int x, int y)? selectedPiecePos;
         private Panel boardPanel;
         private Label statusLabel;
         private const int cellSize = 60;
         private const int margin = 30;
-
-        public Form1()
+        private Image _woodTexture = null;
+        public Form1(GameMode mode)
         {
             InitializeControls();
             gameEngine = new GameEngine();
             selectedPiecePos = null;
+            _woodTexture = Image.FromFile("C:\\IT008\\CoTuong\\Xiangqi_IT008\\WinFormsApp1\\src\\Images\\giay.jpg");
+            _cheDoChoi = mode;
         }
 
         private void InitializeControls()
         {
             this.Text = "Cờ Tướng - Chinese Chess";
-            this.Size = new Size(9 * cellSize + 2 * margin + 20, 10 * cellSize + 2 * margin + 100);
+            this.Size = new Size(9 * cellSize + 2 * margin + 200, 10 * cellSize + 2 * margin + 100);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
+            this.BackColor = Color.BurlyWood;
 
             // Board Panel
             boardPanel = new Panel();
             boardPanel.Location = new Point(0, 0);
             boardPanel.Size = new Size(9 * cellSize + 2 * margin, 10 * cellSize + 2 * margin);
-            boardPanel.BackColor = Color.Wheat;
             boardPanel.Paint += BoardPanel_Paint;
             boardPanel.MouseClick += BoardPanel_MouseClick;
             this.Controls.Add(boardPanel);
 
             // Status Label
             statusLabel = new Label();
-            statusLabel.Location = new Point(10, boardPanel.Height + 10);
-            statusLabel.Size = new Size(boardPanel.Width - 20, 30);
+            statusLabel.Location = new Point(boardPanel.Width + 20, 10); 
+            statusLabel.Size = new Size(this.ClientSize.Width - boardPanel.Width - 40, 30); 
             statusLabel.Font = new Font("Arial", 14, FontStyle.Bold);
             statusLabel.Text = "Lượt: ĐỎ";
             statusLabel.ForeColor = Color.Red;
@@ -46,7 +49,7 @@ namespace WinFormsApp1
             // New Game Button
             Button newGameBtn = new Button();
             newGameBtn.Text = "Ván mới";
-            newGameBtn.Location = new Point(10, statusLabel.Bottom + 10);
+            newGameBtn.Location = new Point(boardPanel.Width + 20, statusLabel.Bottom + 10);
             newGameBtn.Size = new Size(100, 30);
             newGameBtn.Click += (s, e) =>
             {
@@ -56,6 +59,22 @@ namespace WinFormsApp1
                 UpdateStatus();
             };
             this.Controls.Add(newGameBtn);
+
+            // Back to Home Button
+            Button backHomeBtn = new Button();
+            backHomeBtn.Text = "Back to Home";
+            backHomeBtn.Location = new Point(boardPanel.Width + 20, newGameBtn.Bottom + 10);
+            backHomeBtn.Size = new Size(100, 30);
+            backHomeBtn.Click += (s, e) =>
+            { 
+                this.Close();
+            };
+            this.Controls.Add(backHomeBtn);
+        }
+
+        private void BackHomeBtn_Click(object? sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void BoardPanel_Paint(object sender, PaintEventArgs e)
@@ -63,44 +82,60 @@ namespace WinFormsApp1
             Graphics g = e.Graphics;
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-            // Draw board background
-            g.FillRectangle(new SolidBrush(Color.BurlyWood), 0, 0, boardPanel.Width, boardPanel.Height);
+            // Draw background
+            Rectangle boardRect = new Rectangle(margin, margin, 8 * cellSize, 9 * cellSize);
 
-            // Draw grid lines
-            Pen linePen = new Pen(Color.Black, 2);
+            using (TextureBrush textureBrush = new TextureBrush(_woodTexture, System.Drawing.Drawing2D.WrapMode.Tile))
+            {
+                g.FillRectangle(textureBrush, boardRect);
+            }
 
-            // Horizontal lines
+            // Draw grid
+            Pen thinPen = new Pen(Color.Black, 1);
+            Pen thickPen = new Pen(Color.Black, 3); 
+
+            // Draw vertical line
             for (int y = 0; y < 10; y++)
             {
                 int py = margin + y * cellSize;
-                g.DrawLine(linePen, margin, py, margin + 8 * cellSize, py);
+                Pen currentPen = (y == 0 || y == 9) ? thickPen : thinPen;
+                g.DrawLine(currentPen, margin, py, margin + 8 * cellSize, py);
             }
 
-            // Vertical lines (with river gap)
+            // Draw horizontal line
             for (int x = 0; x < 9; x++)
             {
                 int px = margin + x * cellSize;
-                // Top half (0-4)
-                g.DrawLine(linePen, px, margin, px, margin + 4 * cellSize);
-                // Bottom half (5-9)
-                g.DrawLine(linePen, px, margin + 5 * cellSize, px, margin + 9 * cellSize);
+                Pen currentPen = (x == 0 || x == 8) ? thickPen : thinPen;
+                g.DrawLine(currentPen, px, margin, px, margin + 4 * cellSize);
+                g.DrawLine(currentPen, px, margin + 5 * cellSize, px, margin + 9 * cellSize);
             }
 
-            // Draw palaces
-            Pen palacePen = new Pen(Color.Black, 2);
-            // Black palace (top)
-            g.DrawLine(palacePen, margin + 3 * cellSize, margin, margin + 5 * cellSize, margin + 2 * cellSize);
-            g.DrawLine(palacePen, margin + 5 * cellSize, margin, margin + 3 * cellSize, margin + 2 * cellSize);
-            // Red palace (bottom)
-            g.DrawLine(palacePen, margin + 3 * cellSize, margin + 7 * cellSize, margin + 5 * cellSize, margin + 9 * cellSize);
-            g.DrawLine(palacePen, margin + 5 * cellSize, margin + 7 * cellSize, margin + 3 * cellSize, margin + 9 * cellSize);
+            // Draw Palaces
+            g.DrawLine(thinPen, margin + 3 * cellSize, margin, margin + 5 * cellSize, margin + 2 * cellSize);
+            g.DrawLine(thinPen, margin + 5 * cellSize, margin, margin + 3 * cellSize, margin + 2 * cellSize);
+            g.DrawLine(thinPen, margin + 3 * cellSize, margin + 7 * cellSize, margin + 5 * cellSize, margin + 9 * cellSize);
+            g.DrawLine(thinPen, margin + 5 * cellSize, margin + 7 * cellSize, margin + 3 * cellSize, margin + 9 * cellSize);
 
-            // Draw river text
-            Font riverFont = new Font("Arial", 16, FontStyle.Bold);
-            g.DrawString("楚 河", riverFont, Brushes.DarkBlue, margin + cellSize, margin + 4 * cellSize + 10);
-            g.DrawString("漢 界", riverFont, Brushes.DarkBlue, margin + 5 * cellSize, margin + 4 * cellSize + 10);
+            DrawSpecialMarkers(g);
 
-            // Draw valid moves if a piece is selected
+            // Draw words "Sở Hà" (楚 河) and "Hán Giới" (漢 界) ---
+            Font riverFont = new Font("MingLiU", 16, FontStyle.Bold); 
+            StringFormat verticalFormat = new StringFormat { Alignment = StringAlignment.Center };
+
+            // Position of "Sở Hà" (bên trái)
+            float x1 = margin + 2 * cellSize + (cellSize / 2);
+            float y1 = margin + 4 * cellSize + 10;
+            g.DrawString("楚", riverFont, Brushes.Red, x1, y1, verticalFormat);
+            g.DrawString("河", riverFont, Brushes.Red, x1, y1 + 25, verticalFormat); 
+
+            // Position of "Hán Giới" (bên phải)
+            float x2 = margin + 5 * cellSize + (cellSize / 2);
+            g.DrawString("漢", riverFont, Brushes.Red, x2, y1, verticalFormat);
+            g.DrawString("界", riverFont, Brushes.Red, x2, y1 + 25, verticalFormat);
+
+
+            // Draw legal move
             if (selectedPiecePos.HasValue)
             {
                 var (sx, sy) = selectedPiecePos.Value;
@@ -112,17 +147,17 @@ namespace WinFormsApp1
                     {
                         int px = margin + mx * cellSize;
                         int py = margin + my * cellSize;
-                        g.FillEllipse(new SolidBrush(Color.FromArgb(100, Color.LightGreen)), px - 8, py - 8, 16, 16);
+                        g.FillEllipse(new SolidBrush(Color.FromArgb(150, Color.Gold)), px - 8, py - 8, 16, 16);
                     }
 
                     // Highlight selected piece
                     int hx = margin + sx * cellSize;
                     int hy = margin + sy * cellSize;
-                    g.DrawEllipse(new Pen(Color.Yellow, 4), hx - 25, hy - 25, 50, 50);
+                    g.DrawEllipse(new Pen(Color.FromArgb(200, Color.Gold), 4), hx - 24, hy - 24, 48, 48);
                 }
             }
 
-            // Draw pieces
+            // Draw piece
             for (int y = 0; y < 10; y++)
             {
                 for (int x = 0; x < 9; x++)
@@ -130,23 +165,90 @@ namespace WinFormsApp1
                     BasePiece piece = gameEngine.board.grid[y, x];
                     if (piece != null && piece.IsAlive)
                     {
-                        int px = margin + x * cellSize;
-                        int py = margin + y * cellSize;
-
-                        // Draw piece circle
-                        Color pieceColor = piece.Color == PieceColor.Red ? Color.FromArgb(255, 220, 180) : Color.FromArgb(240, 240, 240);
-                        g.FillEllipse(new SolidBrush(pieceColor), px - 22, py - 22, 44, 44);
-                        g.DrawEllipse(new Pen(Color.Black, 3), px - 22, py - 22, 44, 44);
-
-                        // Draw piece text
-                        Font pieceFont = new Font("Arial", 16, FontStyle.Bold);
-                        Color textColor = piece.Color == PieceColor.Red ? Color.DarkRed : Color.Black;
-                        SizeF textSize = g.MeasureString(piece.Name, pieceFont);
-                        g.DrawString(piece.Name, pieceFont, new SolidBrush(textColor),
-                            px - textSize.Width / 2, py - textSize.Height / 2);
+                        DrawPiece3D(g, piece, x, y);
                     }
                 }
             }
+        }
+
+        /// Draw piece with 3D animation (shadow, border)
+        private void DrawPiece3D(Graphics g, BasePiece piece, int x, int y)
+        {
+            int px = margin + x * cellSize;
+            int py = margin + y * cellSize;
+            int radius = 22; 
+
+            // 1. Xác định màu cơ bản
+            Color pieceColor = piece.Color == PieceColor.Red ? Color.FromArgb(255, 220, 180) : Color.FromArgb(240, 240, 240);
+            Color textColor = piece.Color == PieceColor.Red ? Color.DarkRed : Color.Black;
+
+            // Draw piece using Gradient
+            using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
+            {
+                path.AddEllipse(px - radius, py - radius, radius * 2, radius * 2);
+                using (System.Drawing.Drawing2D.PathGradientBrush pgb = new System.Drawing.Drawing2D.PathGradientBrush(path))
+                {
+                    pgb.CenterColor = pieceColor;
+                    Color edgeColor = piece.Color == PieceColor.Red ? Color.FromArgb(200, 170, 130) : Color.FromArgb(180, 180, 180);
+                    pgb.SurroundColors = new Color[] { edgeColor };
+                    pgb.FocusScales = new PointF(0.3f, 0.3f);
+
+                    g.FillEllipse(pgb, px - radius, py - radius, radius * 2, radius * 2);
+                }
+            }
+
+            // Draw border
+            g.DrawEllipse(new Pen(Color.Black, 3), px - radius, py - radius, radius * 2, radius * 2);
+            g.DrawEllipse(new Pen(Color.Gray, 1), px - radius + 3, py - radius + 3, (radius - 3) * 2, (radius - 3) * 2);
+
+            // Draw piece's name
+            Font pieceFont = new Font("MingLiU", 16, FontStyle.Bold);
+            SizeF textSize = g.MeasureString(piece.Name, pieceFont);
+            g.DrawString(piece.Name, pieceFont, new SolidBrush(textColor),
+                px - textSize.Width / 2, py - textSize.Height / 2 + 1);
+        }
+
+        /// Draw marker "L" at position of Cannon and Chariot
+        private void DrawSpecialMarkers(Graphics g)
+        {
+            Pen markerPen = new Pen(Color.FromArgb(150, Color.Black), 1);
+            int size = 6; 
+            int gap = 4; 
+
+            int[] cannonX = { 1, 7 };
+            int[] cannonY = { 2, 7 };
+            int[] soldierX = { 0, 2, 4, 6, 8 };
+            int[] soldierY = { 3, 6 };
+
+            // 
+            foreach (int x in cannonX)
+                foreach (int y in cannonY)
+                    DrawMarkerAt(g, markerPen, x, y, size, gap);
+
+            // 
+            foreach (int x in soldierX)
+                foreach (int y in soldierY)
+                    DrawMarkerAt(g, markerPen, x, y, size, gap);
+        }
+
+        /// 
+        private void DrawMarkerAt(Graphics g, Pen pen, int x, int y, int size, int gap)
+        {
+            int px = margin + x * cellSize;
+            int py = margin + y * cellSize;
+
+            // Top-left
+            g.DrawLine(pen, px - gap - size, py - gap, px - gap, py - gap);
+            g.DrawLine(pen, px - gap, py - gap - size, px - gap, py - gap);
+            // Top-right
+            g.DrawLine(pen, px + gap, py - gap, px + gap + size, py - gap);
+            g.DrawLine(pen, px + gap, py - gap - size, px + gap, py - gap);
+            // Bottom-left
+            g.DrawLine(pen, px - gap - size, py + gap, px - gap, py + gap);
+            g.DrawLine(pen, px - gap, py + gap, px - gap, py + gap + size);
+            // Bottom-right
+            g.DrawLine(pen, px + gap, py + gap, px + gap + size, py + gap);
+            g.DrawLine(pen, px + gap, py + gap, px + gap, py + gap + size);
         }
 
         private void BoardPanel_MouseClick(object sender, MouseEventArgs e)

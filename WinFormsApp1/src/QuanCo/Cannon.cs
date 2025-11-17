@@ -9,7 +9,7 @@ namespace WinFormsApp1.src.QuanCo
     // ==================== CANNON (PHAO) ====================
     public class Cannon : BasePiece
     {
-        public Cannon(PieceColor color, int x, int y) : base("Pháo", color, x, y) { }
+        public Cannon(PieceColor color, int x, int y) : base((color == PieceColor.Red ? "炮" : "砲"), color, x, y) { }
 
         public override List<(int x, int y)> GetValidMoves(Board board)
         {

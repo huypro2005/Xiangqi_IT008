@@ -9,7 +9,7 @@ namespace WinFormsApp1.src.QuanCo
     // ==================== ADVISOR (SI) ====================
     public class Advisor : BasePiece
     {
-        public Advisor(PieceColor color, int x, int y) : base("Sĩ", color, x, y) { }
+        public Advisor(PieceColor color, int x, int y) : base((color == PieceColor.Red? "仕" : "士"), color, x, y) { }
 
         public override List<(int x, int y)> GetValidMoves(Board board)
         {

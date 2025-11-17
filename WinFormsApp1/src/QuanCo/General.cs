@@ -9,7 +9,7 @@ namespace WinFormsApp1.src.QuanCo
     // ==================== GENERAL (TUONG) ====================
     public class General : BasePiece
     {
-        public General(PieceColor color, int x, int y) : base("Tướng", color, x, y) { }
+        public General(PieceColor color, int x, int y) : base((color == PieceColor.Red ? "帥" : "將"), color, x, y) { }
 
         public override List<(int x, int y)> GetValidMoves(Board board)
         {
