@@ -1,5 +1,6 @@
 ﻿using WinFormsApp1.src;
 using WinFormsApp1.src.AI_Play;
+using WinFormsApp1.src.Utils;
 
 namespace WinFormsApp1
 {
@@ -34,7 +35,7 @@ namespace WinFormsApp1
             this.BackColor = Color.BurlyWood;
 
             // Board Panel
-            boardPanel = new Panel();
+            boardPanel = new DoubleBufferedPanel();
             boardPanel.Location = new Point(0, 0);
             boardPanel.Size = new Size(9 * cellSize + 2 * margin, 10 * cellSize + 2 * margin);
             boardPanel.Paint += BoardPanel_Paint;
@@ -347,22 +348,31 @@ namespace WinFormsApp1
             
         }
 
-        private void MakeAIMove()
+        private async void MakeAIMove()
         {
             // Nếu hiện tại không phải lượt của máy thì thôi
+            
             if (gameEngine.CurrentTurn != _aiColor)
                 return;
 
-            // Tìm nước đi tốt nhất cho máy (độ sâu 3–4 tuỳ bạn)
-            var bestMove = _ai.FindBestMove(gameEngine, depth: 3);
+            statusLabel.Text = "Máy đang suy nghĩ...";
 
-                
+            await Task.Delay(50);
+            boardPanel.Invalidate();
+            await Task.Yield();
+
+
+            // Tìm nước đi tốt nhất cho máy (độ sâu 3–4 tuỳ bạn)
+            GameEngine simulator = gameEngine.Clone();
+            var bestMove = await Task.Run(() =>
+            {
+                return _ai.FindBestMove(simulator, depth: 3);
+            });
+
+
             if (bestMove.HasValue)
             {
                 var m = bestMove.Value;
-                //string s = $"Máy đi từ ({m.fromX}, {m.fromY}) đến ({m.toX}, {m.toY})";
-                //MessageBox.Show(s, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                // Thực hiện nước đi
                 gameEngine.MakeMove(m.fromX, m.fromY, m.toX, m.toY);
                 UpdateStatus();
                 boardPanel.Invalidate();
