@@ -354,7 +354,7 @@ namespace WinFormsApp1
                 return;
 
             // Tìm nước đi tốt nhất cho máy (độ sâu 3–4 tuỳ bạn)
-            var bestMove = _ai.FindBestMove(gameEngine, depth: 4);
+            var bestMove = _ai.FindBestMove(gameEngine, depth: 3);
 
                 
             if (bestMove.HasValue)
