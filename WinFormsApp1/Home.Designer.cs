@@ -42,11 +42,11 @@
             // 
             labPlay.AutoSize = true;
             labPlay.BackColor = Color.FromArgb(192, 0, 0);
-            labPlay.Font = new Font("Tiger", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labPlay.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labPlay.ForeColor = Color.Snow;
-            labPlay.Location = new Point(338, 239);
+            labPlay.Location = new Point(386, 319);
             labPlay.Name = "labPlay";
-            labPlay.Size = new Size(74, 24);
+            labPlay.Size = new Size(77, 36);
             labPlay.TabIndex = 1;
             labPlay.Text = "Play";
             labPlay.Click += labPlay_Click;
@@ -57,22 +57,22 @@
             // 
             label1.AutoSize = true;
             label1.BackColor = Color.FromArgb(192, 0, 0);
-            label1.Font = new Font("Tiger", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.Snow;
-            label1.Location = new Point(364, 280);
+            label1.Location = new Point(416, 373);
             label1.Name = "label1";
-            label1.Size = new Size(0, 24);
+            label1.Size = new Size(0, 36);
             label1.TabIndex = 2;
             // 
             // labStudent
             // 
             labStudent.AutoSize = true;
             labStudent.BackColor = Color.FromArgb(192, 0, 0);
-            labStudent.Font = new Font("Tiger", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labStudent.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labStudent.ForeColor = Color.Snow;
-            labStudent.Location = new Point(338, 324);
+            labStudent.Location = new Point(386, 432);
             labStudent.Name = "labStudent";
-            labStudent.Size = new Size(113, 24);
+            labStudent.Size = new Size(125, 36);
             labStudent.TabIndex = 3;
             labStudent.Text = "Student";
             // 
@@ -80,11 +80,11 @@
             // 
             labAbout.AutoSize = true;
             labAbout.BackColor = Color.FromArgb(192, 0, 0);
-            labAbout.Font = new Font("Tiger", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labAbout.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labAbout.ForeColor = Color.Snow;
-            labAbout.Location = new Point(338, 363);
+            labAbout.Location = new Point(386, 484);
             labAbout.Name = "labAbout";
-            labAbout.Size = new Size(87, 24);
+            labAbout.Size = new Size(100, 36);
             labAbout.TabIndex = 4;
             labAbout.Text = "About";
             // 
@@ -92,11 +92,11 @@
             // 
             labExit.AutoSize = true;
             labExit.BackColor = Color.FromArgb(192, 0, 0);
-            labExit.Font = new Font("Tiger", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labExit.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labExit.ForeColor = Color.Snow;
-            labExit.Location = new Point(338, 404);
+            labExit.Location = new Point(386, 539);
             labExit.Name = "labExit";
-            labExit.Size = new Size(74, 24);
+            labExit.Size = new Size(69, 36);
             labExit.TabIndex = 6;
             labExit.Text = "Exit";
             labExit.Click += labExit_Click;
@@ -107,11 +107,11 @@
             // 
             labMode.AutoSize = true;
             labMode.BackColor = Color.FromArgb(192, 0, 0);
-            labMode.Font = new Font("Tiger", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labMode.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labMode.ForeColor = Color.Snow;
-            labMode.Location = new Point(338, 280);
+            labMode.Location = new Point(386, 373);
             labMode.Name = "labMode";
-            labMode.Size = new Size(74, 24);
+            labMode.Size = new Size(94, 36);
             labMode.TabIndex = 7;
             labMode.Text = "Mode";
             labMode.Click += labMode_Click;
@@ -121,22 +121,23 @@
             labSlogan.AutoSize = true;
             labSlogan.BackColor = Color.Transparent;
             labSlogan.FlatStyle = FlatStyle.Flat;
-            labSlogan.Font = new Font("Tiger", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labSlogan.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labSlogan.ForeColor = Color.Snow;
-            labSlogan.Location = new Point(148, 141);
+            labSlogan.Location = new Point(169, 188);
             labSlogan.Name = "labSlogan";
-            labSlogan.Size = new Size(496, 24);
+            labSlogan.Size = new Size(524, 36);
             labSlogan.TabIndex = 8;
             labSlogan.Text = "Welcome to ANYUH Chinese Chess";
+            labSlogan.Click += labSlogan_Click;
             // 
             // Home
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(787, 561);
+            ClientSize = new Size(899, 748);
             Controls.Add(labSlogan);
             Controls.Add(labMode);
             Controls.Add(labExit);
@@ -145,6 +146,7 @@
             Controls.Add(label1);
             Controls.Add(labPlay);
             Cursor = Cursors.Hand;
+            Margin = new Padding(3, 4, 3, 4);
             Name = "Home";
             Text = "Trang Chủ - Cờ Tướng";
             ResumeLayout(false);

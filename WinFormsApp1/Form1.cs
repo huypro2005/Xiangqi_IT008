@@ -1,4 +1,5 @@
 ﻿using WinFormsApp1.src;
+using WinFormsApp1.src.AI_Play;
 
 namespace WinFormsApp1
 {
@@ -12,13 +13,16 @@ namespace WinFormsApp1
         private const int cellSize = 60;
         private const int margin = 30;
         private Image _woodTexture = null;
+        private AI_Run _ai;
+        private PieceColor _aiColor = PieceColor.Black;
         public Form1(GameMode mode)
         {
             InitializeControls();
             gameEngine = new GameEngine();
             selectedPiecePos = null;
-            _woodTexture = Image.FromFile("C:\\IT008\\CoTuong\\Xiangqi_IT008\\WinFormsApp1\\src\\Images\\giay.jpg");
+            _woodTexture = Image.FromFile("./src/Images/giay.jpg");
             _cheDoChoi = mode;
+            _ai = new AI_Run(_aiColor);
         }
 
         private void InitializeControls()
@@ -70,9 +74,30 @@ namespace WinFormsApp1
                 this.Close();
             };
             this.Controls.Add(backHomeBtn);
+
+            // Back to Home Button
+            Button backMove = new Button();
+            backMove.Text = "Back move";
+            backMove.Location = new Point(boardPanel.Width + 20, backHomeBtn.Bottom + 10);
+            backMove.Size = new Size(100, 30);
+            backMove.Click += (s, e) =>
+            {
+                if (gameEngine.UndoMove())
+                {
+                    selectedPiecePos = null;
+                    boardPanel.Invalidate();
+                    UpdateStatus();
+                }
+            };
+            this.Controls.Add(backMove);
         }
 
         private void BackHomeBtn_Click(object? sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void backMove_Click(object? sender, EventArgs e)
         {
             throw new NotImplementedException();
         }
@@ -143,6 +168,7 @@ namespace WinFormsApp1
                 if (selectedPiece != null)
                 {
                     var validMoves = selectedPiece.GetValidMoves(gameEngine.board);
+                    
                     foreach (var (mx, my) in validMoves)
                     {
                         int px = margin + mx * cellSize;
@@ -168,6 +194,12 @@ namespace WinFormsApp1
                         DrawPiece3D(g, piece, x, y);
                     }
                 }
+            }
+            if (gameEngine.State == GameState.Checkmate)
+            {
+                PieceColor winner = gameEngine.CurrentTurn == PieceColor.Red ? PieceColor.Black : PieceColor.Red;
+                string winnerText = winner == PieceColor.Red ? "ĐỎ" : "ĐEN";
+                MessageBox.Show($"Chiếu bí! {winnerText} thắng!", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -253,6 +285,11 @@ namespace WinFormsApp1
 
         private void BoardPanel_MouseClick(object sender, MouseEventArgs e)
         {
+            if (_cheDoChoi == GameMode.NguoiVsMay && gameEngine.CurrentTurn == _aiColor)
+            {
+                return;
+            }
+
             // Convert pixel to grid coordinates
             int gridX = (e.X - margin + cellSize / 2) / cellSize;
             int gridY = (e.Y - margin + cellSize / 2) / cellSize;
@@ -270,29 +307,72 @@ namespace WinFormsApp1
                 {
                     selectedPiecePos = (gridX, gridY);
                 }
+                else
+                {
+                    return;
+                }
+                boardPanel.Invalidate();
             }
             else
             {
                 // Second click - move piece
                 var (fromX, fromY) = selectedPiecePos.Value;
+                if (fromX == gridX && fromY == gridY)
+                {
+                    // Deselect if clicked the same piece
+                    selectedPiecePos = null;
+                    boardPanel.Invalidate();
+                    return;
+                }
                 bool success = gameEngine.MakeMove(fromX, fromY, gridX, gridY);
 
                 if (success)
                 {
                     UpdateStatus();
-
-                    if (gameEngine.State == GameState.Checkmate)
-                    {
-                        PieceColor winner = gameEngine.CurrentTurn == PieceColor.Red ? PieceColor.Black : PieceColor.Red;
-                        string winnerText = winner == PieceColor.Red ? "ĐỎ" : "ĐEN";
-                        MessageBox.Show($"Chiếu bí! {winnerText} thắng!", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                }
+                else
+                {
+                    return;
                 }
 
                 selectedPiecePos = null;
+                boardPanel.Invalidate();
+                if (_cheDoChoi == GameMode.NguoiVsMay && gameEngine.State == GameState.Playing)
+                {
+                    //MessageBox.Show("Đến lượt máy chơi!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MakeAIMove();
+                }
             }
 
-            boardPanel.Invalidate();
+            
+        }
+
+        private void MakeAIMove()
+        {
+            // Nếu hiện tại không phải lượt của máy thì thôi
+            if (gameEngine.CurrentTurn != _aiColor)
+                return;
+
+            // Tìm nước đi tốt nhất cho máy (độ sâu 3–4 tuỳ bạn)
+            var bestMove = _ai.FindBestMove(gameEngine, depth: 4);
+
+                
+            if (bestMove.HasValue)
+            {
+                var m = bestMove.Value;
+                //string s = $"Máy đi từ ({m.fromX}, {m.fromY}) đến ({m.toX}, {m.toY})";
+                //MessageBox.Show(s, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Thực hiện nước đi
+                gameEngine.MakeMove(m.fromX, m.fromY, m.toX, m.toY);
+                UpdateStatus();
+                boardPanel.Invalidate();
+            }
+            else
+            {
+                // Không có nước hợp lệ -> coi như thua (trường hợp hiếm)
+                MessageBox.Show("Máy không còn nước đi!", "Thông báo",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         private void UpdateStatus()

@@ -9,8 +9,7 @@ namespace WinFormsApp1.src.QuanCo
     // ==================== ELEPHANT (TUONG) ====================
     public class Elephant : BasePiece
     {
-        public Elephant(PieceColor color, int x, int y) : base((color == PieceColor.Red ? "相" : "象"), color, x, y) { }
-
+        public Elephant(PieceColor color, int x, int y) : base((color == PieceColor.Red ? "相" : "象"), color, x, y, 400) { }
         public override List<(int x, int y)> GetValidMoves(Board board)
         {
             List<(int x, int y)> moves = new List<(int x, int y)>();

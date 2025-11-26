@@ -9,8 +9,7 @@ namespace WinFormsApp1.src.QuanCo
     // ==================== SOLDIER (TOT) ====================
     public class Soldier : BasePiece
     {
-        public Soldier(PieceColor color, int x, int y) : base((color == PieceColor.Red ? "兵" : "卒"), color, x, y) { }
-
+        public Soldier(PieceColor color, int x, int y) : base((color == PieceColor.Red ? "兵" : "卒"), color, x, y, 300) { }
         public override List<(int x, int y)> GetValidMoves(Board board)
         {
             List<(int x, int y)> moves = new List<(int x, int y)>();

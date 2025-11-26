@@ -12,6 +12,11 @@
     <None Remove="src\Images\van-go-soi.png" />
   </ItemGroup>
 
+	<ItemGroup>
+		<Content Include="src\Images\giay.jpg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
   <ItemGroup>
     <Content Include="src\Images\van-go-soi.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

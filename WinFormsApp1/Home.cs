@@ -23,7 +23,7 @@ namespace WinFormsApp1
         private void labPlay_Click(object sender, EventArgs e)
         {
             this.Hide();
-            Form1 gameForm = new Form1(hienTai);
+            Form1 gameForm = new Form1(GameMode.NguoiVsMay);
             gameForm.FormClosed += (s, args) =>
             {
                 this.Show();
@@ -68,6 +68,11 @@ namespace WinFormsApp1
                 hienTai = GameMode.NguoiVsNguoi;
                 labMode.Text = "2 Players";
             }
+        }
+
+        private void labSlogan_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

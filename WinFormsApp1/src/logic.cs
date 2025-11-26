@@ -17,7 +17,7 @@ namespace WinFormsApp1.src
     public class Board
     {
         public BasePiece[,] grid; // 10 rows (y), 9 columns (x)
-
+       
         public Board()
         {
             grid = new BasePiece[10, 9];
@@ -102,11 +102,44 @@ namespace WinFormsApp1.src
             }
             return cloned;
         }
+
+        public int EvaluateBoard(PieceColor playerColor)
+        {
+            int score = 0;
+            for (int y = 0; y < 10; y++)
+            {
+                for (int x = 0; x < 9; x++)
+                {
+                    BasePiece piece = grid[y, x];
+                    if (piece != null && piece.IsAlive)
+                    {
+                        score += (piece.Color == playerColor) ? piece.pointValue : -piece.pointValue;
+                    }
+                }
+            }
+            return score;
+        }
+
+
     }
 
-    
-   
-    
+
+
+    // ==================== Move Record ====================
+
+    public class MoveRecord
+    {
+        public int FromX, FromY, ToX, ToY;
+        public BasePiece CapturedPiece;
+        public MoveRecord(int fromX, int fromY, int toX, int toY, BasePiece capturedPiece)
+        {
+            FromX = fromX;
+            FromY = fromY;
+            ToX = toX;
+            ToY = toY;
+            CapturedPiece = capturedPiece;
+        }
+    }
 
     // ==================== GAME ENGINE ====================
     public class GameEngine
@@ -114,6 +147,7 @@ namespace WinFormsApp1.src
         public Board board;
         public PieceColor CurrentTurn;
         public GameState State;
+        private Stack<MoveRecord> moveHistory;
 
         public GameEngine()
         {
@@ -121,6 +155,7 @@ namespace WinFormsApp1.src
             board.InitializePieces();
             CurrentTurn = PieceColor.Red;
             State = GameState.Playing;
+            moveHistory = new Stack<MoveRecord>();
         }
 
         public void SwitchTurn()
@@ -199,41 +234,88 @@ namespace WinFormsApp1.src
 
         public bool MakeMove(int fromX, int fromY, int toX, int toY)
         {
-            BasePiece piece = board.GetPiece(fromX, fromY);
-
-            if (piece == null || piece.Color != CurrentTurn || !piece.IsAlive)
-            {
+            // Không cho đi khi game đã kết thúc
+            if (State != GameState.Playing)
                 return false;
-            }
 
+            // 1. Lấy quân xuất phát
+            BasePiece piece = board.GetPiece(fromX, fromY);
+            if (piece == null || piece.Color != CurrentTurn || !piece.IsAlive)
+                return false;
+
+            // 2. Kiểm tra nước đi có nằm trong list hợp lệ không
             var validMoves = piece.GetValidMoves(board);
             if (!validMoves.Contains((toX, toY)))
-            {
                 return false;
-            }
 
-            // Simulate move
-            Board tempBoard = board.Clone();
-            tempBoard.MovePiece(fromX, fromY, toX, toY);
+            // 3. Backup quân bị ăn (nếu có) để dùng cho history + rollback
+            BasePiece captured = board.GetPiece(toX, toY);
 
-            // Check if our king is in check after this move
-            GameEngine tempEngine = new GameEngine();
-            tempEngine.board = tempBoard;
-            if (tempEngine.IsKingInCheck(CurrentTurn))
-            {
-                return false;
-            }
-
-            // Execute the move
+            // 4. Thực hiện TẠM nước đi trên board thật
             board.MovePiece(fromX, fromY, toX, toY);
+
+            // 5. Nếu sau khi đi mà tướng của bên đang đi vẫn bị chiếu -> rollback, không cho đi
+            if (IsKingInCheck(piece.Color))   // hoặc IsKingInCheck(CurrentTurn) vì chưa SwitchTurn
+            {
+                // Rollback thủ công
+                board.grid[fromY, fromX] = piece;
+                piece.X = fromX;
+                piece.Y = fromY;
+
+                board.grid[toY, toX] = captured;
+                if (captured != null)
+                    captured.IsAlive = true;
+
+                return false;
+            }
+
+            // 6. Đến đây là nước đi HỢP LỆ -> log vào history (dùng captured backup)
+            moveHistory.Push(new MoveRecord(fromX, fromY, toX, toY, captured));
+
+            // 7. Đổi lượt
             SwitchTurn();
 
-            // Check game state
+            // 8. Cập nhật trạng thái game
             if (IsCheckmate(CurrentTurn))
-            {
                 State = GameState.Checkmate;
+
+            return true;
+        }
+
+        // ==================== UNDO MOVE ====================
+        public bool UndoMove()
+        {
+            if (moveHistory.Count == 0)
+            {
+                return false;
+            }
+            MoveRecord lastMove = moveHistory.Pop();
+            BasePiece piece = board.GetPiece(lastMove.ToX, lastMove.ToY);
+            board.grid[lastMove.FromY, lastMove.FromX] = piece;
+            try
+            {
+                piece.X = lastMove.FromX;
+                piece.Y = lastMove.FromY;
+                //MessageBox.Show($"{piece.Name}");
+
+            }
+            catch (Exception ex)
+            {
+                return false;
+                    
             }
 
+            if (lastMove.CapturedPiece != null)
+            {
+                board.grid[lastMove.ToY, lastMove.ToX] = lastMove.CapturedPiece;
+                lastMove.CapturedPiece.IsAlive = true;
+            }
+            else
+            {
+                board.grid[lastMove.ToY, lastMove.ToX] = null;
+            }
+            SwitchTurn();
+            State = GameState.Playing;
             return true;
         }
 
@@ -268,6 +350,15 @@ namespace WinFormsApp1.src
                 }
             }
             return true;
+        }
+   
+        public GameEngine Clone()
+        {
+            GameEngine cloned = new GameEngine();
+            cloned.board = this.board.Clone();
+            cloned.CurrentTurn = this.CurrentTurn;
+            cloned.State = this.State;
+            return cloned;
         }
     }
     internal class logic

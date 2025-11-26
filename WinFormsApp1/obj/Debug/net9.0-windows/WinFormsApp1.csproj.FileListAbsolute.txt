@@ -36,3 +36,8 @@ C:\IT008\CoTuong\Xiangqi_IT008\WinFormsApp1\bin\Debug\net9.0-windows\src\Images\
 C:\IT008\CoTuong\Xiangqi_IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.Home.resources
 C:\IT008\CoTuong\Xiangqi_IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.Properties.Resources.resources
 C:\IT008\CoTuong\Xiangqi_IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.SettingMode.resources
+D:\do_an\IT008\WinFormsApp1\bin\Debug\net9.0-windows\src\Images\van-go-soi.png
+D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.Home.resources
+D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.Properties.Resources.resources
+D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.SettingMode.resources
+D:\do_an\IT008\WinFormsApp1\bin\Debug\net9.0-windows\src\Images\giay.jpg

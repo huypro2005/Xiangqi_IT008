@@ -9,8 +9,7 @@ namespace WinFormsApp1.src.QuanCo
     // ==================== HORSE (MA) ====================
     public class Horse : BasePiece
     {
-        public Horse(PieceColor color, int x, int y) : base("馬", color, x, y) { }
-
+        public Horse(PieceColor color, int x, int y) : base("馬", color, x, y, 600) { }
         public override List<(int x, int y)> GetValidMoves(Board board)
         {
             List<(int x, int y)> moves = new List<(int x, int y)>();

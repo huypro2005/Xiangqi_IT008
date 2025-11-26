@@ -9,8 +9,7 @@ namespace WinFormsApp1.src.QuanCo
     // ==================== CHARIOT (XE) ====================
     public class Chariot : BasePiece
     {
-        public Chariot(PieceColor color, int x, int y) : base("車", color, x, y) { }
-
+        public Chariot(PieceColor color, int x, int y) : base("車", color, x, y, 1000) { }
         public override List<(int x, int y)> GetValidMoves(Board board)
         {
             List<(int x, int y)> moves = new List<(int x, int y)>();
