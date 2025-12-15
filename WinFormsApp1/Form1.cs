@@ -366,7 +366,7 @@ namespace WinFormsApp1
             GameEngine simulator = gameEngine.Clone();
             var bestMove = await Task.Run(() =>
             {
-                return _ai.FindBestMove(simulator, depth: 3);
+                return _ai.FindBestMove(simulator, depth: 5);
             });
 
 
