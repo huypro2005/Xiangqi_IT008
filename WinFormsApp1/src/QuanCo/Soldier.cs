@@ -50,6 +50,14 @@ namespace WinFormsApp1.src.QuanCo
         {
             return new Soldier(Color, X, Y) { IsAlive = IsAlive };
         }
+        public override int GetPointValue()
+        {
+            if (Color == PieceColor.Red && 9 - Y < 5)
+            {
+                return pointValue + 50;
+            }
+            return pointValue;
+        }
     }
 
 }

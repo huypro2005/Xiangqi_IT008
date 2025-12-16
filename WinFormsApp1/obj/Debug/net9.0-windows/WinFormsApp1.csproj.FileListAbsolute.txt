@@ -15,7 +15,6 @@ D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.pdb
 D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.genruntimeconfig.cache
 D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\ref\WinFormsApp1.dll
 D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.sourcelink.json
-C:\IT008\CoTuong\Xiangqi_IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.Form1.resources
 C:\IT008\CoTuong\Xiangqi_IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.csproj.GenerateResource.cache
 C:\IT008\CoTuong\Xiangqi_IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.GeneratedMSBuildEditorConfig.editorconfig
 C:\IT008\CoTuong\Xiangqi_IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.AssemblyInfoInputs.cache
@@ -41,3 +40,8 @@ D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.Home.resources
 D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.Properties.Resources.resources
 D:\do_an\IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.SettingMode.resources
 D:\do_an\IT008\WinFormsApp1\bin\Debug\net9.0-windows\src\Images\giay.jpg
+C:\IT008\CoTuong\Xiangqi_IT008\WinFormsApp1\bin\Debug\net9.0-windows\src\Images\giay.jpg
+C:\IT008\CoTuong\Xiangqi_IT008\WinFormsApp1\obj\Debug\net9.0-windows\WinFormsApp1.Form1.resources
+C:\IT008\CoTuong\Xiangqi_IT008\WinFormsApp1\bin\Debug\net9.0-windows\src\Images\Music.wav
+D:\do_an\IT008\WinFormsApp1\bin\Debug\net9.0-windows\Assets\Music.wav
+D:\do_an\IT008\WinFormsApp1\bin\Debug\net9.0-windows\Assets\DropChess.wav

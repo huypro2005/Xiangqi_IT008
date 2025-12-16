@@ -38,4 +38,16 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Assets\Music.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+	<ItemGroup>
+		<None Update="Assets\DropChess.wav">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
 </Project>

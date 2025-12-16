@@ -29,7 +29,7 @@ namespace WinFormsApp1.src
         public abstract List<(int x, int y)> GetValidMoves(Board board);
 
         public abstract BasePiece Clone();
-        public int GetPointValue()
+        public virtual int GetPointValue()
         {
             return pointValue;
         }

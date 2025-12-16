@@ -1,404 +1,355 @@
-﻿using WinFormsApp1.src;
+﻿using System.Drawing.Drawing2D;
+using WinFormsApp1.src;
 using WinFormsApp1.src.AI_Play;
 using WinFormsApp1.src.Utils;
+using WinFormsApp1.src.GUI;
+using System.Media;
 
 namespace WinFormsApp1
 {
     public partial class Form1 : Form
     {
+        // LOGIC
         private GameMode _cheDoChoi;
         private GameEngine gameEngine;
+        private List<BasePiece> _allPieces;
         private (int x, int y)? selectedPiecePos;
-        private Panel boardPanel;
-        private Label statusLabel;
-        private const int cellSize = 60;
-        private const int margin = 30;
-        private Image _woodTexture = null;
         private AI_Run _ai;
         private PieceColor _aiColor = PieceColor.Black;
+
+        // UI & RENDERER
+        private DoubleBufferedPanel boardPanel = null!;
+        private Panel sidePanel = null!;
+        private Label lblStatus = null!;
+        private RoundedButton btnMusic = null!;
+        private Label lblP1Name = null!, lblP2Name = null!;
+
+        private BoardRenderer _renderer; // Đối tượng vẽ
+        private int cellSize;
+        private int boardMargin = 45;
+        private Image? _woodTexture = null;
+        private AudioManagement _audioManager;
+
+        // COLORS
+        private Color colorBgForm = Color.FromArgb(198, 147, 94);
+        private Color colorPieceWood = Color.FromArgb(245, 222, 179);
+        private Color colorPieceBorder = Color.FromArgb(101, 67, 33);
+
+        // DROP CHESS MUSIC
+        private readonly SoundPlayer dropChess;
+        
+
         public Form1(GameMode mode)
         {
-            InitializeControls();
+            InitializeComponent();
+            this.DoubleBuffered = true;
+            _cheDoChoi = mode;
+
             gameEngine = new GameEngine();
             selectedPiecePos = null;
-            _woodTexture = Image.FromFile("./src/Images/giay.jpg");
-            _cheDoChoi = mode;
             _ai = new AI_Run(_aiColor);
+            _allPieces = new List<BasePiece>();
+
+            try { if (File.Exists("./src/Images/giay.jpg")) _woodTexture = Image.FromFile("./src/Images/giay.jpg"); } catch { }
+            dropChess = new SoundPlayer("./Assets/DropChess.wav");
+            dropChess.Load();
+            // Khởi tạo Renderer và Audio
+            _renderer = new BoardRenderer(_woodTexture);
+            _audioManager = new AudioManagement("./Assets/Music.wav");
+            _audioManager.Play();
+
+            CalculateResponsiveSize();
+            SetupCustomInterface();
+            StartNewGame();
         }
 
-        private void InitializeControls()
+        // PLAY DROP CHESS SOUND
+        public void PlayDropChessSound()
         {
-            this.Text = "Cờ Tướng - Chinese Chess";
-            this.Size = new Size(9 * cellSize + 2 * margin + 200, 10 * cellSize + 2 * margin + 100);
-            this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
-            this.BackColor = Color.BurlyWood;
+    
+            dropChess.Play();
+           
+        }
+        private void Form1_Load(object? sender, EventArgs e) { }
 
-            // Board Panel
-            boardPanel = new DoubleBufferedPanel();
-            boardPanel.Location = new Point(0, 0);
-            boardPanel.Size = new Size(9 * cellSize + 2 * margin, 10 * cellSize + 2 * margin);
-            boardPanel.Paint += BoardPanel_Paint;
-            boardPanel.MouseClick += BoardPanel_MouseClick;
-            this.Controls.Add(boardPanel);
+        // --- GAME LOGIC ---
+        private void StartNewGame()
+        {
+            gameEngine = new GameEngine();
+            selectedPiecePos = null;
 
-            // Status Label
-            statusLabel = new Label();
-            statusLabel.Location = new Point(boardPanel.Width + 20, 10); 
-            statusLabel.Size = new Size(this.ClientSize.Width - boardPanel.Width - 40, 30); 
-            statusLabel.Font = new Font("Arial", 14, FontStyle.Bold);
-            statusLabel.Text = "Lượt: ĐỎ";
-            statusLabel.ForeColor = Color.Red;
-            this.Controls.Add(statusLabel);
-
-            // New Game Button
-            Button newGameBtn = new Button();
-            newGameBtn.Text = "Ván mới";
-            newGameBtn.Location = new Point(boardPanel.Width + 20, statusLabel.Bottom + 10);
-            newGameBtn.Size = new Size(100, 30);
-            newGameBtn.Click += (s, e) =>
+            if (_cheDoChoi == GameMode.NguoiVsMay)
             {
-                gameEngine = new GameEngine();
-                selectedPiecePos = null;
-                boardPanel.Invalidate();
-                UpdateStatus();
-            };
-            this.Controls.Add(newGameBtn);
-
-            // Back to Home Button
-            Button backHomeBtn = new Button();
-            backHomeBtn.Text = "Back to Home";
-            backHomeBtn.Location = new Point(boardPanel.Width + 20, newGameBtn.Bottom + 10);
-            backHomeBtn.Size = new Size(100, 30);
-            backHomeBtn.Click += (s, e) =>
-            { 
-                this.Close();
-            };
-            this.Controls.Add(backHomeBtn);
-
-            // Back to Home Button
-            Button backMove = new Button();
-            backMove.Text = "Back move";
-            backMove.Location = new Point(boardPanel.Width + 20, backHomeBtn.Bottom + 10);
-            backMove.Size = new Size(100, 30);
-            backMove.Click += (s, e) =>
-            {
-                if (gameEngine.UndoMove())
-                {
-                    selectedPiecePos = null;
-                    boardPanel.Invalidate();
-                    UpdateStatus();
-                }
-            };
-            this.Controls.Add(backMove);
-        }
-
-        private void BackHomeBtn_Click(object? sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void backMove_Click(object? sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void BoardPanel_Paint(object sender, PaintEventArgs e)
-        {
-            Graphics g = e.Graphics;
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-            // Draw background
-            Rectangle boardRect = new Rectangle(margin, margin, 8 * cellSize, 9 * cellSize);
-
-            using (TextureBrush textureBrush = new TextureBrush(_woodTexture, System.Drawing.Drawing2D.WrapMode.Tile))
-            {
-                g.FillRectangle(textureBrush, boardRect);
+                var res = MessageBox.Show("Bạn muốn đi trước (Cầm Đỏ) không?", "Chọn bên", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                _aiColor = (res == DialogResult.Yes) ? PieceColor.Black : PieceColor.Red;
+                _ai = new AI_Run(_aiColor);
             }
 
-            // Draw grid
-            Pen thinPen = new Pen(Color.Black, 1);
-            Pen thickPen = new Pen(Color.Black, 3); 
-
-            // Draw vertical line
+            _allPieces.Clear();
             for (int y = 0; y < 10; y++)
-            {
-                int py = margin + y * cellSize;
-                Pen currentPen = (y == 0 || y == 9) ? thickPen : thinPen;
-                g.DrawLine(currentPen, margin, py, margin + 8 * cellSize, py);
-            }
-
-            // Draw horizontal line
-            for (int x = 0; x < 9; x++)
-            {
-                int px = margin + x * cellSize;
-                Pen currentPen = (x == 0 || x == 8) ? thickPen : thinPen;
-                g.DrawLine(currentPen, px, margin, px, margin + 4 * cellSize);
-                g.DrawLine(currentPen, px, margin + 5 * cellSize, px, margin + 9 * cellSize);
-            }
-
-            // Draw Palaces
-            g.DrawLine(thinPen, margin + 3 * cellSize, margin, margin + 5 * cellSize, margin + 2 * cellSize);
-            g.DrawLine(thinPen, margin + 5 * cellSize, margin, margin + 3 * cellSize, margin + 2 * cellSize);
-            g.DrawLine(thinPen, margin + 3 * cellSize, margin + 7 * cellSize, margin + 5 * cellSize, margin + 9 * cellSize);
-            g.DrawLine(thinPen, margin + 5 * cellSize, margin + 7 * cellSize, margin + 3 * cellSize, margin + 9 * cellSize);
-
-            DrawSpecialMarkers(g);
-
-            // Draw words "Sở Hà" (楚 河) and "Hán Giới" (漢 界) ---
-            Font riverFont = new Font("MingLiU", 16, FontStyle.Bold); 
-            StringFormat verticalFormat = new StringFormat { Alignment = StringAlignment.Center };
-
-            // Position of "Sở Hà" (bên trái)
-            float x1 = margin + 2 * cellSize + (cellSize / 2);
-            float y1 = margin + 4 * cellSize + 10;
-            g.DrawString("楚", riverFont, Brushes.Red, x1, y1, verticalFormat);
-            g.DrawString("河", riverFont, Brushes.Red, x1, y1 + 25, verticalFormat); 
-
-            // Position of "Hán Giới" (bên phải)
-            float x2 = margin + 5 * cellSize + (cellSize / 2);
-            g.DrawString("漢", riverFont, Brushes.Red, x2, y1, verticalFormat);
-            g.DrawString("界", riverFont, Brushes.Red, x2, y1 + 25, verticalFormat);
-
-
-            // Draw legal move
-            if (selectedPiecePos.HasValue)
-            {
-                var (sx, sy) = selectedPiecePos.Value;
-                BasePiece selectedPiece = gameEngine.board.GetPiece(sx, sy);
-                if (selectedPiece != null)
-                {
-                    var validMoves = selectedPiece.GetValidMoves(gameEngine.board);
-                    
-                    foreach (var (mx, my) in validMoves)
-                    {
-                        int px = margin + mx * cellSize;
-                        int py = margin + my * cellSize;
-                        g.FillEllipse(new SolidBrush(Color.FromArgb(150, Color.Gold)), px - 8, py - 8, 16, 16);
-                    }
-
-                    // Highlight selected piece
-                    int hx = margin + sx * cellSize;
-                    int hy = margin + sy * cellSize;
-                    g.DrawEllipse(new Pen(Color.FromArgb(200, Color.Gold), 4), hx - 24, hy - 24, 48, 48);
-                }
-            }
-
-            // Draw piece
-            for (int y = 0; y < 10; y++)
-            {
                 for (int x = 0; x < 9; x++)
                 {
-                    BasePiece piece = gameEngine.board.grid[y, x];
-                    if (piece != null && piece.IsAlive)
-                    {
-                        DrawPiece3D(g, piece, x, y);
-                    }
+                    var p = gameEngine.board.grid[y, x];
+                    if (p != null) _allPieces.Add(p);
                 }
-            }
-            if (gameEngine.State == GameState.Checkmate)
-            {
-                PieceColor winner = gameEngine.CurrentTurn == PieceColor.Red ? PieceColor.Black : PieceColor.Red;
-                string winnerText = winner == PieceColor.Red ? "ĐỎ" : "ĐEN";
-                MessageBox.Show($"Chiếu bí! {winnerText} thắng!", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
 
-        /// Draw piece with 3D animation (shadow, border)
-        private void DrawPiece3D(Graphics g, BasePiece piece, int x, int y)
-        {
-            int px = margin + x * cellSize;
-            int py = margin + y * cellSize;
-            int radius = 22; 
+            UpdatePlayerLabels();
+            UpdateStatus();
+            boardPanel?.Invalidate();
+            sidePanel?.Invalidate();
 
-            // 1. Xác định màu cơ bản
-            Color pieceColor = piece.Color == PieceColor.Red ? Color.FromArgb(255, 220, 180) : Color.FromArgb(240, 240, 240);
-            Color textColor = piece.Color == PieceColor.Red ? Color.DarkRed : Color.Black;
-
-            // Draw piece using Gradient
-            using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
-            {
-                path.AddEllipse(px - radius, py - radius, radius * 2, radius * 2);
-                using (System.Drawing.Drawing2D.PathGradientBrush pgb = new System.Drawing.Drawing2D.PathGradientBrush(path))
-                {
-                    pgb.CenterColor = pieceColor;
-                    Color edgeColor = piece.Color == PieceColor.Red ? Color.FromArgb(200, 170, 130) : Color.FromArgb(180, 180, 180);
-                    pgb.SurroundColors = new Color[] { edgeColor };
-                    pgb.FocusScales = new PointF(0.3f, 0.3f);
-
-                    g.FillEllipse(pgb, px - radius, py - radius, radius * 2, radius * 2);
-                }
-            }
-
-            // Draw border
-            g.DrawEllipse(new Pen(Color.Black, 3), px - radius, py - radius, radius * 2, radius * 2);
-            g.DrawEllipse(new Pen(Color.Gray, 1), px - radius + 3, py - radius + 3, (radius - 3) * 2, (radius - 3) * 2);
-
-            // Draw piece's name
-            Font pieceFont = new Font("MingLiU", 16, FontStyle.Bold);
-            SizeF textSize = g.MeasureString(piece.Name, pieceFont);
-            g.DrawString(piece.Name, pieceFont, new SolidBrush(textColor),
-                px - textSize.Width / 2, py - textSize.Height / 2 + 1);
-        }
-
-        /// Draw marker "L" at position of Cannon and Chariot
-        private void DrawSpecialMarkers(Graphics g)
-        {
-            Pen markerPen = new Pen(Color.FromArgb(150, Color.Black), 1);
-            int size = 6; 
-            int gap = 4; 
-
-            int[] cannonX = { 1, 7 };
-            int[] cannonY = { 2, 7 };
-            int[] soldierX = { 0, 2, 4, 6, 8 };
-            int[] soldierY = { 3, 6 };
-
-            // 
-            foreach (int x in cannonX)
-                foreach (int y in cannonY)
-                    DrawMarkerAt(g, markerPen, x, y, size, gap);
-
-            // 
-            foreach (int x in soldierX)
-                foreach (int y in soldierY)
-                    DrawMarkerAt(g, markerPen, x, y, size, gap);
-        }
-
-        /// 
-        private void DrawMarkerAt(Graphics g, Pen pen, int x, int y, int size, int gap)
-        {
-            int px = margin + x * cellSize;
-            int py = margin + y * cellSize;
-
-            // Top-left
-            g.DrawLine(pen, px - gap - size, py - gap, px - gap, py - gap);
-            g.DrawLine(pen, px - gap, py - gap - size, px - gap, py - gap);
-            // Top-right
-            g.DrawLine(pen, px + gap, py - gap, px + gap + size, py - gap);
-            g.DrawLine(pen, px + gap, py - gap - size, px + gap, py - gap);
-            // Bottom-left
-            g.DrawLine(pen, px - gap - size, py + gap, px - gap, py + gap);
-            g.DrawLine(pen, px - gap, py + gap, px - gap, py + gap + size);
-            // Bottom-right
-            g.DrawLine(pen, px + gap, py + gap, px + gap + size, py + gap);
-            g.DrawLine(pen, px + gap, py + gap, px + gap, py + gap + size);
-        }
-
-        private void BoardPanel_MouseClick(object sender, MouseEventArgs e)
-        {
             if (_cheDoChoi == GameMode.NguoiVsMay && gameEngine.CurrentTurn == _aiColor)
-            {
-                return;
-            }
+                MakeAIMove();
+        }
 
-            // Convert pixel to grid coordinates
-            int gridX = (e.X - margin + cellSize / 2) / cellSize;
-            int gridY = (e.Y - margin + cellSize / 2) / cellSize;
-
-            if (!gameEngine.board.IsWithinBounds(gridX, gridY))
+        private void UpdatePlayerLabels()
+        {
+            if (lblP1Name == null || lblP2Name == null) return;
+            if (_cheDoChoi == GameMode.NguoiVsNguoi)
             {
-                return;
-            }
-
-            if (!selectedPiecePos.HasValue)
-            {
-                // First click - select piece
-                BasePiece piece = gameEngine.board.GetPiece(gridX, gridY);
-                if (piece != null && piece.Color == gameEngine.CurrentTurn && piece.IsAlive)
-                {
-                    selectedPiecePos = (gridX, gridY);
-                }
-                else
-                {
-                    return;
-                }
-                boardPanel.Invalidate();
+                lblP1Name.Text = "Người chơi 1 (Đỏ)"; lblP2Name.Text = "Người chơi 2 (Đen)";
             }
             else
             {
-                // Second click - move piece
-                var (fromX, fromY) = selectedPiecePos.Value;
-                if (fromX == gridX && fromY == gridY)
-                {
-                    // Deselect if clicked the same piece
-                    selectedPiecePos = null;
-                    boardPanel.Invalidate();
-                    return;
-                }
-                bool success = gameEngine.MakeMove(fromX, fromY, gridX, gridY);
+                lblP1Name.Text = _aiColor == PieceColor.Black ? "Người chơi (Đỏ)" : "Máy tính (Đỏ)";
+                lblP2Name.Text = _aiColor == PieceColor.Black ? "Máy tính (Đen)" : "Người chơi (Đen)";
+            }
+        }
 
-                if (success)
+        private void CalculateResponsiveSize()
+        {
+            int screenH = Screen.PrimaryScreen?.WorkingArea.Height ?? 768;
+            int availableHeight = (int)(screenH * 0.85) - 40 - (2 * boardMargin);
+            cellSize = availableHeight / 10;
+            if (cellSize < 50) cellSize = 50; if (cellSize > 90) cellSize = 90;
+        }
+
+        // --- UI & DRAWING ---
+        private void BoardPanel_Paint(object? sender, PaintEventArgs e)
+        {
+            // GỌI RENDERER ĐỂ VẼ
+            _renderer.DrawBoard(e.Graphics, boardPanel.Width, boardPanel.Height,
+                                cellSize, boardMargin, gameEngine, selectedPiecePos);
+
+            if (gameEngine.State == GameState.Checkmate)
+            {
+                string w = gameEngine.CurrentTurn == PieceColor.Red ? "ĐEN" : "ĐỎ";
+                MessageBox.Show($"Chiếu bí! {w} thắng!", "Kết thúc", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void BoardPanel_MouseClick(object? sender, MouseEventArgs e)
+        {
+            if (_cheDoChoi == GameMode.NguoiVsMay && gameEngine.CurrentTurn == _aiColor) return;
+
+            // Tính toán lại tọa độ click (Do Renderer căn giữa)
+            int gw = 8 * cellSize, gh = 9 * cellSize, pad = 40;
+            int sx = (boardPanel.Width - (gw + 2 * pad)) / 2, sy = (boardPanel.Height - (gh + 2 * pad)) / 2;
+            int gox = sx + pad, goy = sy + pad;
+
+            int gx = (e.X - gox + cellSize / 2) / cellSize;
+            int gy = (e.Y - goy + cellSize / 2) / cellSize;
+
+            if (!gameEngine.board.IsWithinBounds(gx, gy)) return;
+
+            if (!selectedPiecePos.HasValue)
+            {
+                // Chọn quân cờ
+                var p = gameEngine.board.GetPiece(gx, gy);
+                if (p != null && p.Color == gameEngine.CurrentTurn && p.IsAlive) 
+                { 
+                    selectedPiecePos = (gx, gy); 
+                    boardPanel.Invalidate(); 
+                }
+            }
+            else
+            {
+                var (fx, fy) = selectedPiecePos.Value;
+                if (fx == gx && fy == gy) { selectedPiecePos = null; boardPanel.Invalidate(); return; }
+
+                if (gameEngine.MakeMove(fx, fy, gx, gy))
                 {
-                    UpdateStatus();
+                    UpdateStatus(); selectedPiecePos = null; 
+                    boardPanel.Invalidate(); 
+                    sidePanel.Invalidate();
+                    PlayDropChessSound();
+                    if (_cheDoChoi == GameMode.NguoiVsMay && gameEngine.State != GameState.Checkmate) MakeAIMove();
                 }
                 else
                 {
-                    return;
-                }
-
-                selectedPiecePos = null;
-                boardPanel.Invalidate();
-                if (_cheDoChoi == GameMode.NguoiVsMay && gameEngine.State == GameState.Playing)
-                {
-                    //MessageBox.Show("Đến lượt máy chơi!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    MakeAIMove();
+                    var p = gameEngine.board.GetPiece(gx, gy);
+                    if (p != null && p.Color == gameEngine.CurrentTurn) 
+                    { 
+                        selectedPiecePos = (gx, gy); 
+                        boardPanel.Invalidate(); 
+                    }
                 }
             }
-
-            
         }
 
         private async void MakeAIMove()
         {
-            // Nếu hiện tại không phải lượt của máy thì thôi
-            
-            if (gameEngine.CurrentTurn != _aiColor)
-                return;
-
-            statusLabel.Text = "Máy đang suy nghĩ...";
-
+            if (_cheDoChoi != GameMode.NguoiVsMay || gameEngine.CurrentTurn != _aiColor) return;
+            lblStatus.Text = "Máy đang nghĩ...";
             await Task.Delay(50);
-            boardPanel.Invalidate();
-            await Task.Yield();
-
-
-            // Tìm nước đi tốt nhất cho máy (độ sâu 3–4 tuỳ bạn)
-            GameEngine simulator = gameEngine.Clone();
-            var bestMove = await Task.Run(() =>
+            GameEngine sim = gameEngine.Clone();
+            var move = await Task.Run(() => _ai.FindBestMove(sim, depth: 4));
+            if (move.HasValue)
             {
-                return _ai.FindBestMove(simulator, depth: 5);
-            });
-
-
-            if (bestMove.HasValue)
-            {
-                var m = bestMove.Value;
-                gameEngine.MakeMove(m.fromX, m.fromY, m.toX, m.toY);
-                UpdateStatus();
-                boardPanel.Invalidate();
+                gameEngine.MakeMove(move.Value.fromX, move.Value.fromY, move.Value.toX, move.Value.toY);
+                UpdateStatus(); 
+                boardPanel.Invalidate(); 
+                sidePanel.Invalidate();
+                PlayDropChessSound();
             }
-            else
-            {
-                // Không có nước hợp lệ -> coi như thua (trường hợp hiếm)
-                MessageBox.Show("Máy không còn nước đi!", "Thông báo",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            else MessageBox.Show("Máy đầu hàng!", "Thông báo");
         }
 
         private void UpdateStatus()
         {
             string turn = gameEngine.CurrentTurn == PieceColor.Red ? "ĐỎ" : "ĐEN";
-            statusLabel.Text = $"Lượt: {turn}";
-            statusLabel.ForeColor = gameEngine.CurrentTurn == PieceColor.Red ? Color.Red : Color.Black;
-
-            if (gameEngine.IsKingInCheck(gameEngine.CurrentTurn))
-            {
-                statusLabel.Text += " - CHIẾU!";
-            }
+            lblStatus.Text = $"Lượt: {turn}";
+            lblStatus.ForeColor = gameEngine.CurrentTurn == PieceColor.Red ? Color.DarkRed : Color.Black;
+            if (gameEngine.IsKingInCheck(gameEngine.CurrentTurn)) lblStatus.Text += " - CHIẾU!";
         }
-        private void Form1_Load(object sender, EventArgs e)
-        {
 
+        // --- SETUP GIAO DIỆN (Giữ nguyên phần này) ---
+        private void SetupCustomInterface()
+        {
+            this.Text = "Cờ Tướng - Chinese Chess";
+            this.BackColor = colorBgForm;
+            this.Paint += (s, e) => {
+                if (_woodTexture != null) using (TextureBrush tb = new TextureBrush(_woodTexture, WrapMode.Tile)) e.Graphics.FillRectangle(tb, ClientRectangle);
+                else using (LinearGradientBrush b = new LinearGradientBrush(ClientRectangle, colorBgForm, Color.FromArgb(100, 50, 20), 45f)) e.Graphics.FillRectangle(b, ClientRectangle);
+            };
+
+            int bw = 9 * cellSize + 2 * boardMargin;
+            int bh = 10 * cellSize + 2 * boardMargin;
+            int sw = 320, pad = 20;
+            this.ClientSize = new Size(pad + bw + sw + pad, bh + 2 * pad);
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.Controls.Clear();
+
+            boardPanel = new DoubleBufferedPanel { Size = new Size(bw, bh), Location = new Point(pad, pad), BackColor = Color.Transparent };
+            boardPanel.Paint += BoardPanel_Paint;
+            boardPanel.MouseClick += BoardPanel_MouseClick;
+            this.Controls.Add(boardPanel);
+
+            sidePanel = new Panel { Size = new Size(sw, bh), Location = new Point(boardPanel.Right + 10, pad), BackColor = Color.Transparent };
+            this.Controls.Add(sidePanel);
+
+            btnMusic = new RoundedButton { Size = new Size(80, 30), Location = new Point(ClientSize.Width - 90, 5), Font = new Font("Segoe UI", 8, FontStyle.Bold), BackColor = Color.FromArgb(100, 0, 0, 0) };
+            btnMusic.Text = _audioManager.IsPlaying ? "🔊 Bật" : "🔇 Tắt";
+            btnMusic.Click += (s, e) => { btnMusic.Text = _audioManager.Toggle() ? "🔊 Bật" : "🔇 Tắt"; };
+            this.Controls.Add(btnMusic); btnMusic.BringToFront();
+
+            AddSidePanelControls();
+        }
+
+        private void AddSidePanelControls()
+        {
+            int sw = sidePanel.Width;
+            Panel p1 = CreateFancyPlayerBox("Player 1", Color.DarkRed, out lblP1Name);
+            p1.Location = new Point((sw - p1.Width) / 2, 0);
+            sidePanel.Controls.Add(p1);
+
+            lblStatus = new Label { Text = "Lượt: ĐỎ", Font = new Font("Segoe UI", 20, FontStyle.Bold), ForeColor = Color.DarkRed, AutoSize = false, TextAlign = ContentAlignment.MiddleCenter, Size = new Size(sw, 50), Location = new Point(0, 180) };
+            sidePanel.Controls.Add(lblStatus);
+
+            Panel p2 = CreateFancyPlayerBox("Player 2", Color.Black, out lblP2Name);
+            p2.Location = new Point((sw - p2.Width) / 2, 250);
+            sidePanel.Controls.Add(p2);
+
+            int bw = 140, bh = 45, gap = 15, sx = (sw - bw) / 2, sy = 430;
+            RoundedButton btnNew = new RoundedButton { Text = "Ván mới", Size = new Size(bw, bh), Location = new Point(sx, sy) };
+            btnNew.Click += (s, e) => StartNewGame();
+            sidePanel.Controls.Add(btnNew);
+
+            RoundedButton btnUndo = new RoundedButton { Text = "Đi lại", Size = new Size(bw, bh), Location = new Point(sx, sy + bh + gap) };
+            btnUndo.Click += (s, e) => {
+                // 1. Chặn bấm khi Máy đang suy nghĩ (tránh lỗi crash)
+                if (_cheDoChoi == GameMode.NguoiVsMay && gameEngine.CurrentTurn == _aiColor) return;
+
+                bool needUpdate = false;
+
+                if (_cheDoChoi == GameMode.NguoiVsNguoi)
+                {
+                    // Chế độ PvP: Chỉ cần lui 1 nước như bình thường
+                    if (gameEngine.UndoMove()) needUpdate = true;
+                }
+                else
+                {
+                    // Chế độ PvE: Phải lui 2 nước (Máy + Người) để về lại lượt người chơi
+                    // Bước 1: Lui nước của Máy
+                    if (gameEngine.UndoMove())
+                    {
+                        needUpdate = true;
+
+                        // Bước 2: Lui tiếp nước của Người chơi (để mình được đi lại)
+                        // Chỉ lui tiếp nếu vẫn chưa hết lịch sử (đề phòng trường hợp mới vào game Máy đi trước)
+                        gameEngine.UndoMove();
+                    }
+                }
+
+                if (needUpdate)
+                {
+                    selectedPiecePos = null;
+                    boardPanel.Invalidate();
+                    sidePanel.Invalidate();
+                    UpdateStatus();
+
+                    // Nếu sau khi Undo mà lại rơi vào lượt của Máy (Trường hợp Máy đi tiên, và ta Undo về đầu game)
+                    // Thì bắt buộc phải gọi Máy đi lại ngay, nếu không sẽ bị treo.
+                    if (_cheDoChoi == GameMode.NguoiVsMay && gameEngine.CurrentTurn == _aiColor)
+                    {
+                        MakeAIMove();
+                    }
+                }
+            };
+            sidePanel.Controls.Add(btnUndo);
+
+            RoundedButton btnExit = new RoundedButton { Text = "Thoát", Size = new Size(bw, bh), Location = new Point(sx, sy + 2 * (bh + gap)) };
+            btnExit.Click += (s, e) => Close();
+            sidePanel.Controls.Add(btnExit);
+        }
+
+        private Panel CreateFancyPlayerBox(string defaultName, Color pColor, out Label nameLabel)
+        {
+            Panel p = new Panel { Size = new Size(200, 160), BackColor = Color.Transparent };
+            PieceColor capType = (pColor == Color.DarkRed) ? PieceColor.Black : PieceColor.Red;
+
+            p.Paint += (s, e) => {
+                Graphics g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
+                Rectangle r = new Rectangle(0, 0, p.Width - 1, p.Height - 1);
+                using (GraphicsPath path = new GraphicsPath())
+                {
+                    int rad = 10;
+                    path.AddArc(r.X, r.Y, rad, rad, 180, 90); path.AddArc(r.Right - rad, r.Y, rad, rad, 270, 90);
+                    path.AddArc(r.Right - rad, r.Bottom - rad, rad, rad, 0, 90); path.AddArc(r.X, r.Bottom - rad, rad, rad, 90, 90); path.CloseFigure();
+                    using (SolidBrush b = new SolidBrush(Color.FromArgb(220, 250, 240, 200))) g.FillPath(b, path);
+                    using (Pen pen = new Pen(Color.FromArgb(139, 69, 19), 2)) g.DrawPath(pen, path);
+                }
+                var caps = _allPieces.Where(x => x.Color == capType && !x.IsAlive).ToList();
+                int ms = 24, sx = 15, sy = 85, gp = 4, c = 0;
+                g.DrawString("Đã ăn:", new Font("Segoe UI", 9, FontStyle.Italic), Brushes.DimGray, 15, 65);
+                foreach (var pc in caps)
+                {
+                    Rectangle mr = new Rectangle(sx + (c * (ms + gp)), sy, ms, ms);
+                    g.FillEllipse(Brushes.White, mr); g.DrawEllipse(Pens.Brown, mr);
+                    Color tc = pc.Color == PieceColor.Red ? Color.DarkRed : Color.Black;
+                    Font f = new Font("Microsoft YaHei", 10, FontStyle.Bold); try { f = new Font("Kaiti", 10, FontStyle.Bold); } catch { }
+                    StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+                    g.DrawString(pc.Name, f, new SolidBrush(tc), mr.X + ms / 2, mr.Y + ms / 2 + 2, sf);
+                    c++; if (c >= 6) { c = 0; sy += ms + gp; }
+                }
+            };
+            PictureBox avt = new PictureBox { Size = new Size(50, 50), Location = new Point(15, 15), BackColor = pColor };
+            avt.Paint += (s, e) => ControlPaint.DrawBorder(e.Graphics, avt.ClientRectangle, Color.Goldenrod, 3, ButtonBorderStyle.Solid, Color.Goldenrod, 3, ButtonBorderStyle.Solid, Color.Goldenrod, 3, ButtonBorderStyle.Solid, Color.Goldenrod, 3, ButtonBorderStyle.Solid);
+            p.Controls.Add(avt);
+            Label lbl = new Label { Text = defaultName, Location = new Point(75, 20), Size = new Size(120, 40), Font = new Font("Segoe UI", 10, FontStyle.Bold), ForeColor = Color.FromArgb(80, 40, 0) };
+            p.Controls.Add(lbl);
+            nameLabel = lbl;
+            return p;
         }
     }
 }

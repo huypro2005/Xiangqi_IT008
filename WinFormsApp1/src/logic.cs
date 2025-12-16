@@ -113,13 +113,12 @@ namespace WinFormsApp1.src
                     BasePiece piece = grid[y, x];
                     if (piece != null && piece.IsAlive)
                     {
-                        score += (piece.Color == playerColor) ? piece.pointValue : -piece.pointValue;
+                        score += (piece.Color == playerColor) ? piece.GetPointValue() : -piece.GetPointValue();
                     }
                 }
             }
             return score;
         }
-
 
     }
 

@@ -44,7 +44,7 @@
             labPlay.BackColor = Color.FromArgb(192, 0, 0);
             labPlay.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labPlay.ForeColor = Color.Snow;
-            labPlay.Location = new Point(386, 319);
+            labPlay.Location = new Point(481, 288);
             labPlay.Name = "labPlay";
             labPlay.Size = new Size(77, 36);
             labPlay.TabIndex = 1;
@@ -70,11 +70,13 @@
             labStudent.BackColor = Color.FromArgb(192, 0, 0);
             labStudent.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labStudent.ForeColor = Color.Snow;
-            labStudent.Location = new Point(386, 432);
+            labStudent.Location = new Point(481, 431);
             labStudent.Name = "labStudent";
             labStudent.Size = new Size(125, 36);
             labStudent.TabIndex = 3;
             labStudent.Text = "Student";
+            labStudent.MouseEnter += labStudent_MouseEnter;
+            labStudent.MouseLeave += labStudent_MouseLeave;
             // 
             // labAbout
             // 
@@ -82,11 +84,13 @@
             labAbout.BackColor = Color.FromArgb(192, 0, 0);
             labAbout.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labAbout.ForeColor = Color.Snow;
-            labAbout.Location = new Point(386, 484);
+            labAbout.Location = new Point(480, 501);
             labAbout.Name = "labAbout";
             labAbout.Size = new Size(100, 36);
             labAbout.TabIndex = 4;
             labAbout.Text = "About";
+            labAbout.MouseEnter += labAbout_MouseEnter;
+            labAbout.MouseLeave += labAbout_MouseLeave;
             // 
             // labExit
             // 
@@ -94,7 +98,7 @@
             labExit.BackColor = Color.FromArgb(192, 0, 0);
             labExit.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labExit.ForeColor = Color.Snow;
-            labExit.Location = new Point(386, 539);
+            labExit.Location = new Point(481, 563);
             labExit.Name = "labExit";
             labExit.Size = new Size(69, 36);
             labExit.TabIndex = 6;
@@ -109,25 +113,27 @@
             labMode.BackColor = Color.FromArgb(192, 0, 0);
             labMode.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labMode.ForeColor = Color.Snow;
-            labMode.Location = new Point(386, 373);
+            labMode.Location = new Point(463, 360);
             labMode.Name = "labMode";
             labMode.Size = new Size(94, 36);
             labMode.TabIndex = 7;
             labMode.Text = "Mode";
             labMode.Click += labMode_Click;
+            labMode.MouseEnter += labMode_MouseEnter;
+            labMode.MouseLeave += labMode_MouseLeave;
             // 
             // labSlogan
             // 
             labSlogan.AutoSize = true;
             labSlogan.BackColor = Color.Transparent;
             labSlogan.FlatStyle = FlatStyle.Flat;
-            labSlogan.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labSlogan.Font = new Font("Bradley Hand ITC", 48F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labSlogan.ForeColor = Color.Snow;
-            labSlogan.Location = new Point(169, 188);
+            labSlogan.Location = new Point(131, 128);
             labSlogan.Name = "labSlogan";
-            labSlogan.Size = new Size(524, 36);
+            labSlogan.Size = new Size(745, 100);
             labSlogan.TabIndex = 8;
-            labSlogan.Text = "Welcome to ANYUH Chinese Chess";
+            labSlogan.Text = "Welcome to XiangQi";
             labSlogan.Click += labSlogan_Click;
             // 
             // Home
@@ -137,7 +143,7 @@
             BackColor = Color.White;
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(899, 748);
+            ClientSize = new Size(1029, 816);
             Controls.Add(labSlogan);
             Controls.Add(labMode);
             Controls.Add(labExit);
