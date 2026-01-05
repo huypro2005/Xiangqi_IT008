@@ -31,7 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Home));
             labPlay = new Label();
             label1 = new Label();
-            labStudent = new Label();
             labAbout = new Label();
             labExit = new Label();
             labMode = new Label();
@@ -63,20 +62,6 @@
             label1.Name = "label1";
             label1.Size = new Size(0, 29);
             label1.TabIndex = 2;
-            // 
-            // labStudent
-            // 
-            labStudent.AutoSize = true;
-            labStudent.BackColor = Color.FromArgb(192, 0, 0);
-            labStudent.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            labStudent.ForeColor = Color.Snow;
-            labStudent.Location = new Point(421, 323);
-            labStudent.Name = "labStudent";
-            labStudent.Size = new Size(102, 29);
-            labStudent.TabIndex = 3;
-            labStudent.Text = "Student";
-            labStudent.MouseEnter += labStudent_MouseEnter;
-            labStudent.MouseLeave += labStudent_MouseLeave;
             // 
             // labAbout
             // 
@@ -114,7 +99,7 @@
             labMode.BackColor = Color.FromArgb(192, 0, 0);
             labMode.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labMode.ForeColor = Color.Snow;
-            labMode.Location = new Point(405, 270);
+            labMode.Location = new Point(398, 269);
             labMode.Name = "labMode";
             labMode.Size = new Size(79, 29);
             labMode.TabIndex = 7;
@@ -149,7 +134,6 @@
             Controls.Add(labMode);
             Controls.Add(labExit);
             Controls.Add(labAbout);
-            Controls.Add(labStudent);
             Controls.Add(label1);
             Controls.Add(labPlay);
             Cursor = Cursors.Hand;
@@ -162,7 +146,6 @@
         #endregion
         private Label labPlay;
         private Label label1;
-        private Label labStudent;
         private Label labAbout;
         private Label labExit;
         private Label labMode;
