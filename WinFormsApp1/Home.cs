@@ -12,7 +12,6 @@ namespace WinFormsApp1
         public Home()
         {
             InitializeComponent();
-
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -129,6 +128,20 @@ namespace WinFormsApp1
             }
         }
 
+        private void labAbout_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            About aboutForm = new About();
+
+            aboutForm.FormClosed += (s, args) =>
+            {
+                this.Show();
+                this.CenterToScreen();
+            };
+
+            aboutForm.Show();
+        }
+
         private void HoverEffect(object sender, bool isEnter)
         {
             if (sender is Label lbl)
@@ -154,5 +167,19 @@ namespace WinFormsApp1
 
         private void labExit_MouseEnter(object sender, EventArgs e) => HoverEffect(sender, true);
         private void labExit_MouseLeave(object sender, EventArgs e) => HoverEffect(sender, false);
+
+        private void labAbout_Click_1(object sender, EventArgs e)
+        {
+            this.Hide();
+            About aboutForm = new About();
+
+            aboutForm.FormClosed += (s, args) =>
+            {
+                this.Show();
+                this.CenterToScreen();
+            };
+
+            aboutForm.Show();
+        }
     }
 }

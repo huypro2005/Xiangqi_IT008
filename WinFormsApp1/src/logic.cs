@@ -298,8 +298,9 @@ namespace WinFormsApp1.src
                 //MessageBox.Show($"{piece.Name}");
 
             }
-            catch (Exception ex)
+            catch 
             {
+           
                 return false;
                     
             }

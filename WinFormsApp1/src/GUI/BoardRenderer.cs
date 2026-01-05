@@ -1,5 +1,5 @@
 ﻿using System.Drawing.Drawing2D;
-using WinFormsApp1.src; // Namespace chứa Board, Piece, GameEngine
+using WinFormsApp1.src; 
 
 namespace WinFormsApp1.src.GUI
 {

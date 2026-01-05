@@ -9,7 +9,7 @@ namespace WinFormsApp1.src.Utils
 {
     internal class AudioManagement
     {
-        private SoundPlayer _player;
+        private SoundPlayer? _player;
         public bool IsPlaying { get; private set; } 
 
         public AudioManagement(string filePath)
@@ -20,6 +20,9 @@ namespace WinFormsApp1.src.Utils
                 if (System.IO.File.Exists(filePath))
                 {
                     _player = new SoundPlayer(filePath);
+                } else
+                {
+                    _player = null;
                 }
             }
             catch { _player = null; }
