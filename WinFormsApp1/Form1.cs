@@ -19,7 +19,7 @@ namespace WinFormsApp1
 
         // UI & RENDERER
         private DoubleBufferedPanel boardPanel = null!;
-        private Panel sidePanel = null!;
+        private DoubleBufferedPanel sidePanel = null!;
         private Label lblStatus = null!;
         private RoundedButton btnMusic = null!;
         private Label lblP1Name = null!, lblP2Name = null!;
@@ -37,13 +37,14 @@ namespace WinFormsApp1
 
         // DROP CHESS MUSIC
         private readonly SoundPlayer dropChess;
-        
+        private int _aiDepth;
 
-        public Form1(GameMode mode)
+        public Form1(GameMode mode, int depth = 2)
         {
             InitializeComponent();
             this.DoubleBuffered = true;
             _cheDoChoi = mode;
+            _aiDepth = depth;
 
             gameEngine = new GameEngine();
             selectedPiecePos = null;
@@ -193,7 +194,7 @@ namespace WinFormsApp1
             lblStatus.Text = "Máy đang nghĩ...";
             await Task.Delay(50);
             GameEngine sim = gameEngine.Clone();
-            var move = await Task.Run(() => _ai.FindBestMove(sim, depth: 4));
+            var move = await Task.Run(() => _ai.FindBestMove(sim, depth: _aiDepth));
             if (move.HasValue)
             {
                 gameEngine.MakeMove(move.Value.fromX, move.Value.fromY, move.Value.toX, move.Value.toY);
@@ -235,7 +236,7 @@ namespace WinFormsApp1
             boardPanel.MouseClick += BoardPanel_MouseClick;
             this.Controls.Add(boardPanel);
 
-            sidePanel = new Panel { Size = new Size(sw, bh), Location = new Point(boardPanel.Right + 10, pad), BackColor = Color.Transparent };
+            sidePanel = new DoubleBufferedPanel { Size = new Size(sw, bh), Location = new Point(boardPanel.Right + 10, pad), BackColor = Color.Transparent };
             this.Controls.Add(sidePanel);
 
             btnMusic = new RoundedButton { Size = new Size(80, 30), Location = new Point(ClientSize.Width - 90, 5), Font = new Font("Segoe UI", 8, FontStyle.Bold), BackColor = Color.FromArgb(100, 0, 0, 0) };
