@@ -41,7 +41,7 @@
             // 
             labPlay.AutoSize = true;
             labPlay.BackColor = Color.FromArgb(192, 0, 0);
-            labPlay.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labPlay.Font = new Font("Bradley Hand ITC", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labPlay.ForeColor = Color.Snow;
             labPlay.Location = new Point(421, 216);
             labPlay.Name = "labPlay";
@@ -56,7 +56,7 @@
             // 
             label1.AutoSize = true;
             label1.BackColor = Color.FromArgb(192, 0, 0);
-            label1.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.Font = new Font("Bradley Hand ITC", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.Snow;
             label1.Location = new Point(364, 280);
             label1.Name = "label1";
@@ -67,7 +67,7 @@
             // 
             labAbout.AutoSize = true;
             labAbout.BackColor = Color.FromArgb(192, 0, 0);
-            labAbout.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labAbout.Font = new Font("Bradley Hand ITC", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labAbout.ForeColor = Color.Snow;
             labAbout.Location = new Point(420, 376);
             labAbout.Name = "labAbout";
@@ -82,7 +82,7 @@
             // 
             labExit.AutoSize = true;
             labExit.BackColor = Color.FromArgb(192, 0, 0);
-            labExit.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labExit.Font = new Font("Bradley Hand ITC", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labExit.ForeColor = Color.Snow;
             labExit.Location = new Point(421, 422);
             labExit.Name = "labExit";
@@ -97,7 +97,7 @@
             // 
             labMode.AutoSize = true;
             labMode.BackColor = Color.FromArgb(192, 0, 0);
-            labMode.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labMode.Font = new Font("Bradley Hand ITC", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labMode.ForeColor = Color.Snow;
             labMode.Location = new Point(398, 269);
             labMode.Name = "labMode";
