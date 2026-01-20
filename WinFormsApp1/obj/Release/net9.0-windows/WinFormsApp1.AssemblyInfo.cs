@@ -15,10 +15,14 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 <<<<<<< HEAD
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+91f200faa77afb7c446cc878ce11861ce4286299")]
 =======
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aa18583c5da2cf31ab5f71a157f6b4c0c5876bc7")]
 >>>>>>> c0cde1f8fd2cd843b520c61b7168326ab5dbdfbe
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c0cde1f8fd2cd843b520c61b7168326ab5dbdfbe")]
+>>>>>>> 6353ba05831de81d70725cbe9433d5d546ce2428
 [assembly: System.Reflection.AssemblyProductAttribute("WinFormsApp1")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WinFormsApp1")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

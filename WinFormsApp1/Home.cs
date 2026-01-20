@@ -14,9 +14,8 @@ namespace WinFormsApp1
         private ContextMenuStrip levelMenu;
         private int selectedDepth = 2; // Mặc định Easy
 
-        // Màu sắc chủ đạo (Đỏ đậm như trong ảnh)
         private Color themeRed = Color.FromArgb(192, 0, 0);
-        private Font themeFont = new Font("Segoe UI", 12, FontStyle.Bold);
+        private Font themeFont = new Font("Bradley Hand ITC", 12, FontStyle.Bold);
 
         public Home()
         {
@@ -53,17 +52,17 @@ namespace WinFormsApp1
             labLevel.BackColor = themeRed;
             labLevel.ForeColor = Color.White;
             labLevel.TextAlign = ContentAlignment.MiddleCenter;
-            labLevel.AutoSize = false; // Tắt tự động co giãn để chỉnh kích thước khối
-            labLevel.Size = new Size(150, 30); // Kích thước khối chữ nhật
+            labLevel.AutoSize = false; 
+            labLevel.Size = new Size(220, 40); 
             labLevel.Cursor = Cursors.Hand;
-            labLevel.Visible = false; // Ẩn lúc đầu
+            labLevel.Visible = false; 
 
             // 2. Tạo Menu thả xuống (ContextMenuStrip)
             levelMenu = new ContextMenuStrip();
-            levelMenu.ShowImageMargin = false; // Bỏ lề chứa icon để menu gọn hơn
-            levelMenu.BackColor = themeRed;    // Nền menu đỏ
-            levelMenu.Font = new Font("Segoe UI", 11, FontStyle.Bold);
-            levelMenu.Renderer = new RedDropdownRenderer(); // Dùng bộ vẽ màu riêng (ở dưới cùng file)
+            levelMenu.ShowImageMargin = false; 
+            levelMenu.BackColor = themeRed;   
+            levelMenu.Font = new Font("Bradley Hand ITC", 10, FontStyle.Bold);
+            levelMenu.Renderer = new RedDropdownRenderer(); 
 
             // Thêm các lựa chọn
             AddItemToMenu("LEVEL: Easy", 2);
